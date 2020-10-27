@@ -1,0 +1,9 @@
+.snowflake {
+  background-image: radial-gradient(
+    farthest-side at 80% 75%,
+    #bbb 20%,
+    white 80%
+  );
+  border-radius: 10rem;
+  position: absolute;
+}

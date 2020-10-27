@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberUtils } from "../Utils";
+import { NumberUtils } from "../../Utils";
 import {
   MIN_SCREEN_X,
   MAX_SCREEN_X,
@@ -13,7 +13,8 @@ import {
   MIN_SNOWFLAKE_HOR_SPEED,
   MAX_SNOWFLAKE_HOR_SPEED,
   MAX_SCREEN_Y,
-} from "../Utils/Constants";
+} from "../../Constants";
+import "./Snowflake.css";
 
 export default class Snowflake extends React.Component<
   {},

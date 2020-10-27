@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Snowfall from "./Snowfall/Snowfall";
+import { Snowfall } from "./Snowfall";
 
 class App extends React.Component {
   render() {
@@ -11,7 +11,5 @@ class App extends React.Component {
     );
   }
 }
-
-
 
 export default App;
