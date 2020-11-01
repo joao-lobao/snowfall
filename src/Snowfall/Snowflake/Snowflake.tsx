@@ -30,12 +30,7 @@ export default class Snowflake extends React.Component<
 > {
   constructor(props: any) {
     super(props);
-    const {
-      blur,
-      proximity,
-      speedV,
-      size,
-    } = this.getPerspectiveParamsBasedOnSize();
+    const { blur, proximity, speedV, size } = this.generatePerspectiveParams();
     this.state = {
       blur,
       proximity,
@@ -53,57 +48,16 @@ export default class Snowflake extends React.Component<
     };
   }
 
-  getSizeBasedOn(randomNumber: number) {
-    let size = 0;
-    if (
-      randomNumber > MAX_SIZE_OF_SMALL_SNOWFLAKES &&
-      randomNumber < MIN_SIZE_OF_LARGE_SNOWFLAKES
-    ) {
-      size = NumberUtils.randomizer(
-        MIN_SNOWFLAKE_SIZE,
-        MAX_SIZE_OF_SMALL_SNOWFLAKES
-      );
-    }
-    return size || randomNumber;
-  }
-
-  getBlurProximityAndSpeedBasedOn(randomNumber: number) {
-    let blur = 0;
-    let proximity = 0;
-    let speedV = 0;
-    if (randomNumber > MIN_SIZE_OF_LARGE_SNOWFLAKES) {
-      blur = NumberUtils.randomizer(5, 15);
-      proximity = 999;
-      speedV = NumberUtils.randomizer(
-        MIN_SNOWFLAKE_VER_SPEED + 2,
-        MAX_SNOWFLAKE_VER_SPEED
-      );
-    } else {
-      blur = NumberUtils.randomizer(0, 3);
-      proximity = 1;
-      speedV = NumberUtils.randomizer(
-        MIN_SNOWFLAKE_VER_SPEED,
-        MAX_SNOWFLAKE_VER_SPEED - 2
-      );
-    }
-
-    return {
-      blur,
-      proximity,
-      speedV,
-    };
-  }
-
-  getPerspectiveParamsBasedOnSize() {
-    let randomNumber = NumberUtils.randomizer(
+  generatePerspectiveParams() {
+    let randomSizeFactor = NumberUtils.randomizer(
       MIN_SNOWFLAKE_SIZE,
       MAX_SNOWFLAKE_SIZE
     );
 
-    const { blur, proximity, speedV } = this.getBlurProximityAndSpeedBasedOn(
-      randomNumber
+    const { blur, proximity, speedV } = this.generateBlurProximityAndSpeedBy(
+      randomSizeFactor
     );
-    const size = this.getSizeBasedOn(randomNumber);
+    const size = this.generateSizeBy(randomSizeFactor);
 
     return {
       blur,
@@ -113,11 +67,49 @@ export default class Snowflake extends React.Component<
     };
   }
 
+  generateBlurProximityAndSpeedBy(randomSizeFactor: number) {
+    if (randomSizeFactor > MIN_SIZE_OF_LARGE_SNOWFLAKES) {
+      return {
+        blur: NumberUtils.randomizer(5, 15),
+        proximity: 999,
+        speedV: NumberUtils.randomizer(
+          MIN_SNOWFLAKE_VER_SPEED + 2,
+          MAX_SNOWFLAKE_VER_SPEED
+        ),
+      };
+    }
+    return {
+      blur: NumberUtils.randomizer(0, 3),
+      proximity: 1,
+      speedV: NumberUtils.randomizer(
+        MIN_SNOWFLAKE_VER_SPEED,
+        MAX_SNOWFLAKE_VER_SPEED - 2
+      ),
+    };
+  }
+
+  generateSizeBy(randomSizeFactor: number) {
+    if (
+      randomSizeFactor > MAX_SIZE_OF_SMALL_SNOWFLAKES &&
+      randomSizeFactor < MIN_SIZE_OF_LARGE_SNOWFLAKES
+    ) {
+      return NumberUtils.randomizer(
+        MIN_SNOWFLAKE_SIZE,
+        MAX_SIZE_OF_SMALL_SNOWFLAKES
+      );
+    }
+    return randomSizeFactor;
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.move(), 10);
+  }
+
   move() {
     let x = this.state.position.x + this.state.speedH * this.state.direction;
     let y = this.state.position.y + this.state.speedV;
 
-    if (this.state.position.x < MIN_SCREEN_Y) {
+    if (this.state.position.x < MIN_SCREEN_X) {
       x = MAX_SCREEN_X;
     } else if (this.state.position.x > MAX_SCREEN_X) {
       x = MIN_SCREEN_X;
@@ -132,15 +124,11 @@ export default class Snowflake extends React.Component<
     });
   }
 
-  interval: any = undefined;
-
-  componentDidMount() {
-    this.interval = setInterval(() => this.move(), 10);
-  }
-
   componentWillUnmount() {
     clearInterval(this.interval);
   }
+
+  interval: any = undefined;
 
   render() {
     return (
